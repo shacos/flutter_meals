@@ -17,15 +17,59 @@ class MealDetailsScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(meal.title),
       ),
-      body: FadeInImage(
-        height: 300,
-        width: double.infinity,
-        fit: BoxFit.fill,
-        placeholder: MemoryImage(
-          kTransparentImage,
-        ),
-        image: NetworkImage(
-          meal.imageUrl,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            FadeInImage(
+              height: 300,
+              width: double.infinity,
+              fit: BoxFit.fill,
+              placeholder: MemoryImage(
+                kTransparentImage,
+              ),
+              image: NetworkImage(
+                meal.imageUrl,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Ingredients',
+              style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                    color: Theme.of(context).colorScheme.primary,
+                    fontWeight: FontWeight.bold,
+                  ),
+            ),
+            const SizedBox(height: 12),
+            for (final ingredient in meal.ingredients)
+              Text(
+                ingredient,
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                      color: Theme.of(context).colorScheme.onBackground,
+                    ),
+              ),
+            const SizedBox(height: 12),
+            Text(
+              'Steps',
+              style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                    color: Theme.of(context).colorScheme.primary,
+                    fontWeight: FontWeight.bold,
+                  ),
+            ),
+            for (final step in meal.steps)
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
+                child: Text(
+                  textAlign: TextAlign.center,
+                  step,
+                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                        color: Theme.of(context).colorScheme.onBackground,
+                      ),
+                ),
+              ),
+          ],
         ),
       ),
     );

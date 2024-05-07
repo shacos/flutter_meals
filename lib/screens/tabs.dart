@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:meals/providers/meals_provider.dart';
 import 'package:meals/screens/categories.dart';
 import 'package:meals/screens/filters.dart';
 import 'package:meals/screens/meals.dart';
 import 'package:meals/models/meal.dart';
 import 'package:meals/widgets/filter_switch_item.dart';
 import 'package:meals/widgets/main_drawer.dart';
+import 'package:meals/providers/meals_provider.dart';
+import 'package:meals/providers/favorites_provider.dart';
 
 Map<Filter, bool> _defaultFilters = {
   Filter.glutenFree: false,
@@ -27,38 +28,12 @@ class TabsScreen extends ConsumerStatefulWidget {
 
 class _TabsScreenState extends ConsumerState<TabsScreen> {
   int _tabIndex = 0;
-  final List<Meal> _favoriteMeals = [];
   Map<Filter, bool> _selectedFilters = _defaultFilters;
 
   void _setIndex(int index) {
     setState(() {
       _tabIndex = index;
     });
-  }
-
-  void _showInfoMessage(String message) {
-    ScaffoldMessenger.of(context).clearSnackBars();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-      ),
-    );
-  }
-
-  void _setFavoriteMealStatus(Meal meal) {
-    final isExisting = _favoriteMeals.contains(meal);
-
-    if (isExisting) {
-      setState(() {
-        _favoriteMeals.remove(meal);
-        _showInfoMessage('${meal.title} is no longer a favorite.');
-      });
-    } else {
-      setState(() {
-        _favoriteMeals.add(meal);
-        _showInfoMessage('${meal.title} is a favorite.');
-      });
-    }
   }
 
   void _setScreen(String title) async {
@@ -78,6 +53,7 @@ class _TabsScreenState extends ConsumerState<TabsScreen> {
   @override
   Widget build(BuildContext context) {
     final meals = ref.watch(mealsProvider);
+    final favoriteMeals = ref.watch(favoriteMealProvider);
 
     List<Meal> filteredMeals = meals.where(
       (meal) {
@@ -101,15 +77,13 @@ class _TabsScreenState extends ConsumerState<TabsScreen> {
       {
         'title': 'Categories',
         'screen': CategoriesScreen(
-          onSelectFavorite: _setFavoriteMealStatus,
           filteredMeals: filteredMeals,
         ),
       },
       {
         'title': 'You Favorites',
         'screen': MealsScreen(
-          onSelectFavorite: _setFavoriteMealStatus,
-          meals: _favoriteMeals,
+          meals: favoriteMeals,
         )
       }
     ];

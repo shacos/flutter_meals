@@ -1,10 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:meals/data/dummy_data.dart';
 
 import 'package:meals/screens/categories.dart';
 import 'package:meals/screens/filters.dart';
 import 'package:meals/screens/meals.dart';
 import 'package:meals/models/meal.dart';
+import 'package:meals/widgets/filter_switch_item.dart';
 import 'package:meals/widgets/main_drawer.dart';
+
+Map<Filter, bool> _defaultFilters = {
+  Filter.glutenFree: false,
+  Filter.lactoseFree: false,
+  Filter.vegetarian: false,
+  Filter.vegan: false,
+};
 
 class TabsScreen extends StatefulWidget {
   const TabsScreen({super.key});
@@ -18,6 +27,7 @@ class TabsScreen extends StatefulWidget {
 class _TabsScreenState extends State<TabsScreen> {
   int _tabIndex = 0;
   final List<Meal> _favoriteMeals = [];
+  Map<Filter, bool> _selectedFilters = _defaultFilters;
 
   void _setIndex(int index) {
     setState(() {
@@ -50,24 +60,46 @@ class _TabsScreenState extends State<TabsScreen> {
     }
   }
 
-  void _setScreen(String title) {
+  void _setScreen(String title) async {
     Navigator.of(context).pop();
     if (title == 'filters') {
-      Navigator.of(context).pushReplacement(
+      final result = await Navigator.of(context).push<Map<Filter, bool>>(
         MaterialPageRoute(
-          builder: (ctx) => const FiltersScreen(),
+          builder: (ctx) => FiltersScreen(selectedFilters: _selectedFilters),
         ),
       );
+      setState(() {
+        _selectedFilters = result ?? _defaultFilters;
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    List<Meal> filteredMeals = dummyMeals.where(
+      (meal) {
+        if (_selectedFilters[Filter.glutenFree]! && !meal.isGlutenFree) {
+          return false;
+        }
+        if (_selectedFilters[Filter.lactoseFree]! && !meal.isLactoseFree) {
+          return false;
+        }
+        if (_selectedFilters[Filter.vegetarian]! && !meal.isVegetarian) {
+          return false;
+        }
+        if (_selectedFilters[Filter.vegan]! && !meal.isVegan) {
+          return false;
+        }
+        return true;
+      },
+    ).toList();
+
     List<Map<String, Object>> availableTabScreens = [
       {
         'title': 'Categories',
         'screen': CategoriesScreen(
           onSelectFavorite: _setFavoriteMealStatus,
+          filteredMeals: filteredMeals,
         ),
       },
       {

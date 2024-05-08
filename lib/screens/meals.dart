@@ -14,7 +14,7 @@ class MealsScreen extends StatelessWidget {
   final String? title;
   final List<Meal> meals;
 
-  void SelectedMeal(BuildContext context, Meal meal) {
+  void selectedMeal(BuildContext context, Meal meal) {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (ctx) => MealDetailsScreen(
@@ -53,7 +53,7 @@ class MealsScreen extends StatelessWidget {
         itemCount: meals.length,
         itemBuilder: (ctx, index) => MealItem(
           meal: meals[index],
-          onSelectedMeal: SelectedMeal,
+          onSelectedMeal: selectedMeal,
         ),
       );
     }

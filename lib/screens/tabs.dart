@@ -5,10 +5,9 @@ import 'package:meals/screens/categories.dart';
 import 'package:meals/screens/filters.dart';
 import 'package:meals/screens/meals.dart';
 import 'package:meals/models/meal.dart';
-import 'package:meals/widgets/filter_switch_item.dart';
 import 'package:meals/widgets/main_drawer.dart';
-import 'package:meals/providers/meals_provider.dart';
 import 'package:meals/providers/favorites_provider.dart';
+import 'package:meals/providers/filters_provider.dart';
 
 Map<Filter, bool> _defaultFilters = {
   Filter.glutenFree: false,
@@ -28,7 +27,6 @@ class TabsScreen extends ConsumerStatefulWidget {
 
 class _TabsScreenState extends ConsumerState<TabsScreen> {
   int _tabIndex = 0;
-  Map<Filter, bool> _selectedFilters = _defaultFilters;
 
   void _setIndex(int index) {
     setState(() {
@@ -36,42 +34,22 @@ class _TabsScreenState extends ConsumerState<TabsScreen> {
     });
   }
 
-  void _setScreen(String title) async {
+  void _setScreen(String title) {
     Navigator.of(context).pop();
     if (title == 'filters') {
-      final result = await Navigator.of(context).push<Map<Filter, bool>>(
+      Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (ctx) => FiltersScreen(selectedFilters: _selectedFilters),
+          builder: (ctx) => const FiltersScreen(),
         ),
       );
-      setState(() {
-        _selectedFilters = result ?? _defaultFilters;
-      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final meals = ref.watch(mealsProvider);
     final favoriteMeals = ref.watch(favoriteMealProvider);
 
-    List<Meal> filteredMeals = meals.where(
-      (meal) {
-        if (_selectedFilters[Filter.glutenFree]! && !meal.isGlutenFree) {
-          return false;
-        }
-        if (_selectedFilters[Filter.lactoseFree]! && !meal.isLactoseFree) {
-          return false;
-        }
-        if (_selectedFilters[Filter.vegetarian]! && !meal.isVegetarian) {
-          return false;
-        }
-        if (_selectedFilters[Filter.vegan]! && !meal.isVegan) {
-          return false;
-        }
-        return true;
-      },
-    ).toList();
+    List<Meal> filteredMeals = ref.watch(filteredMealsProvider);
 
     List<Map<String, Object>> availableTabScreens = [
       {

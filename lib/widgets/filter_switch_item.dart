@@ -1,32 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-enum Filter {
-  glutenFree,
-  lactoseFree,
-  vegetarian,
-  vegan,
-}
+import 'package:meals/providers/filters_provider.dart';
 
-class FilterSwitchItem extends StatelessWidget {
+class FilterSwitchItem extends ConsumerWidget {
   const FilterSwitchItem({
     super.key,
-    required this.switchValue,
     required this.filter,
-    required this.onToggelSwitch,
     required this.title,
   });
 
-  final bool switchValue;
   final Filter filter;
-  final void Function(bool, Filter) onToggelSwitch;
   final String title;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return SwitchListTile(
-      value: switchValue,
+      value: ref.watch(filterProvider)[filter]!,
       onChanged: (isChecked) {
-        onToggelSwitch(isChecked, filter);
+        ref.read(filterProvider.notifier).setFilter(filter, isChecked);
       },
       title: Text(
         title,

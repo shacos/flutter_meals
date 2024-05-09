@@ -6,11 +6,7 @@ import 'package:meals/models/meal.dart';
 import 'package:meals/widgets/meal_item_trait.dart';
 
 class MealItem extends StatelessWidget {
-  const MealItem({
-    super.key,
-    required this.meal,
-    required this.onSelectedMeal
-  });
+  const MealItem({super.key, required this.meal, required this.onSelectedMeal});
 
   final Meal meal;
   final Function(BuildContext context, Meal meal) onSelectedMeal;
@@ -24,8 +20,6 @@ class MealItem extends StatelessWidget {
     return meal.affordability.name[0].toUpperCase() +
         meal.affordability.name.substring(1);
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -42,16 +36,19 @@ class MealItem extends StatelessWidget {
         },
         child: Stack(
           children: [
-            FadeInImage(
-              placeholder: MemoryImage(
-                kTransparentImage,
+            Hero(
+              tag: meal.id,
+              child: FadeInImage(
+                placeholder: MemoryImage(
+                  kTransparentImage,
+                ),
+                image: NetworkImage(
+                  meal.imageUrl,
+                ),
+                fit: BoxFit.cover,
+                height: 200,
+                width: double.infinity,
               ),
-              image: NetworkImage(
-                meal.imageUrl,
-              ),
-              fit: BoxFit.cover,
-              height: 200,
-              width: double.infinity,
             ),
             Positioned(
               bottom: 0,
